@@ -1,0 +1,61 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id           Int        @id @default(autoincrement())
+  name         String
+  email        String     @unique
+  password     String
+  recipes      Recipe[]
+  role         Role       @relation(fields: [roleId], references: [idRole])
+  roleId       Int
+  UserStatus   UserStatus @relation(fields: [userStatusId], references: [id])
+  userStatusId Int
+}
+
+model Role {
+  idRole   Int    @id @default(autoincrement())
+  roleDesc String
+  users    User[]
+}
+
+model UserStatus {
+  id         Int    @id @default(autoincrement())
+  descStatus String
+  users      User[]
+}
+
+model Recipe {
+  id            Int         @id @default(autoincrement())
+  title         String
+  description   String      @db.VarChar(500)
+  amount        Int
+  time          DateTime    @default(now())
+  UserId        Int
+  user          User        @relation(fields: [UserId], references: [id])
+  categories    Category[]
+  recipeState   RecipeState @relation(fields: [stateId], references: [id])
+  stateId       Int
+  preparingTime Int
+}
+
+model Category {
+  id      Int      @id @default(autoincrement())
+  name    String
+  recipes Recipe[]
+}
+
+model RecipeState {
+  id              Int      @id @default(autoincrement())
+  descRecipeState String
+  recipes         Recipe[]
+}
